@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --input-bg: #f8f9fa;
+            --text-color: #2d3748;
+            --accent-color: #764ba2;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            filter: blur(50px);
+            z-index: -1;
+            animation: float 20s infinite;
+        }
+
+        .shape-1 {
+            top: -10%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .shape-2 {
+            bottom: -10%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(30px, 50px);
+            }
+        }
+
+        .container {
+            background: var(--glass-bg);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #4a5568;
+            transition: color 0.3s;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid transparent;
+            background: var(--input-bg);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            background: white;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+        }
+
+        .form-group:focus-within label {
+            color: var(--accent-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+
+        #result.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .success {
+            background: rgba(72, 187, 120, 0.1);
+            color: #2f855a;
+            border: 1px solid rgba(72, 187, 120, 0.2);
+        }
+
+        .error {
+            background: rgba(245, 101, 101, 0.1);
+            color: #c53030;
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
+        .score-value {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        button.loading .btn-text {
+            display: none;
+        }
+
+        button.loading .spinner {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+
+    <div class="container">
+        <h2>Student AI</h2>
+        <p class="subtitle">Predict final performance score</p>
+
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="attendance">Attendance Rate (%)</label>
+                <input type="number" id="attendance" required min="0" max="100" placeholder="e.g. 85">
+            </div>
+            <div class="form-group">
+                <label for="study_hours">Weekly Study Hours</label>
+                <input type="number" id="study_hours" required min="0" step="0.1" placeholder="e.g. 12.5">
+            </div>
+            <div class="form-group">
+                <label for="previous_score">Previous Semester Score</label>
+                <input type="number" id="previous_score" required min="0" max="100" placeholder="e.g. 78">
+            </div>
+            <button type="submit">
+                <span class="btn-text">Predict Score</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = e.target.querySelector('button');
+            const resultDiv = document.getElementById('result');
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+            resultDiv.className = '';
+            resultDiv.classList.remove('show');
+
+            const data = {
+                attendance: document.getElementById('attendance').value,
+                study_hours: document.getElementById('study_hours').value,
+                previous_score: document.getElementById('previous_score').value
+            };
+
+            await new Promise(r => setTimeout(r, 600));
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                resultDiv.classList.add('show');
+
+                if (response.ok) {
+                    resultDiv.className = 'success show';
+                    resultDiv.innerHTML = `
+                        Predicted Final Score
+                        <span class="score-value">${result['Predicted Final Score']}</span>
+                    `;
+                } else {
+                    resultDiv.className = 'error show';
+                    resultDiv.textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'error show';
+                resultDiv.textContent = 'Connection failed. Please check server.';
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>
